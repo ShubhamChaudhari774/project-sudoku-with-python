@@ -1,0 +1,135 @@
+name: Autograding Tests
+on:
+  - push
+  - workflow_dispatch
+  - repository_dispatch
+
+permissions:
+  checks: write
+  actions: read
+  contents: read
+
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-24.04
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Python 3.9
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.9'
+
+    - name: Install Clingo
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install clingo==5.6.2
+        python -c "import clingo; print('Detected clingo:', clingo.__version__)"
+
+    - name: Question 0a
+      id: question-0a
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: 'Question 0a: group.txt exists'
+        command: 'ls group.txt'
+        timeout: '10'
+        max-score: '0'
+
+    - name: Question 0b
+      id: question-0b
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: 'Question 0b: group.txt is not empty'
+        command: 'ls group.txt && [ -s group.txt ]'
+        timeout: '10'
+        max-score: '0'
+
+    - name: Question 1a
+      id: question-1a
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: 'Question 1a'
+        command: 'python autograder.py --question=1a'
+        timeout: '20'
+        max-score: '10'
+
+    - name: Question 1b
+      id: question-1b
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: 'Question 1b'
+        command: 'python autograder.py --question=1b'
+        timeout: '20'
+        max-score: '10'
+
+    - name: Question 2
+      id: question-2
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: 'Question 2'
+        command: 'python autograder.py --question=2'
+        timeout: '20'
+        max-score: '10'
+
+    - name: Question 3
+      id: question-3
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: 'Question 3'
+        command: 'python autograder.py --question=3'
+        timeout: '20'
+        max-score: '10'
+
+    - name: Question 4
+      id: question-4
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: 'Question 4'
+        command: 'python autograder.py --question=4'
+        timeout: '30'
+        max-score: '30'
+
+    - name: Question 5
+      id: question-5
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: 'Question 5'
+        command: 'python autograder.py --question=5'
+        timeout: '20'
+        max-score: '10'
+
+    - name: Question 6a
+      id: question-6a
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: 'Question 6a'
+        command: 'python autograder.py --question=6a'
+        timeout: '20'
+        max-score: '10'
+
+    - name: Question 6b
+      id: question-6b
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: 'Question 6b'
+        command: 'python autograder.py --question=6b'
+        timeout: '20'
+        max-score: '10'
+
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        QUESTION-0A_RESULTS: "${{steps.question-0a.outputs.result}}"
+        QUESTION-0B_RESULTS: "${{steps.question-0b.outputs.result}}"
+        QUESTION-1A_RESULTS: "${{steps.question-1a.outputs.result}}"
+        QUESTION-1B_RESULTS: "${{steps.question-1b.outputs.result}}"
+        QUESTION-2_RESULTS: "${{steps.question-2.outputs.result}}"
+        QUESTION-3_RESULTS: "${{steps.question-3.outputs.result}}"
+        QUESTION-4_RESULTS: "${{steps.question-4.outputs.result}}"
+        QUESTION-5_RESULTS: "${{steps.question-5.outputs.result}}"
+        QUESTION-6A_RESULTS: "${{steps.question-6a.outputs.result}}"
+        QUESTION-6B_RESULTS: "${{steps.question-6b.outputs.result}}"
+      with:
+        runners: 'question-0a,question-0b,question-1a,question-1b,question-2,question-3,question-4,question-5,question-6a,question-6b'
