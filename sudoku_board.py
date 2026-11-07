@@ -9,6 +9,21 @@ class Sudoku:
     def __str__(self) -> str:
         s = ""
         # YOUR CODE HERE
+        for row in range(1, 10):
+            for col in range(1, 10):
+                s += str(self.sudoku[(row, col)])
+
+                if col == 3 or col == 6:
+                    s += "  "
+                elif col != 9:
+                    s += " "
+
+            if row != 9:
+                s += "\n"
+
+            if row == 3 or row == 6:
+                s += "\n"
+        
         return s
 
     @classmethod
@@ -21,4 +36,11 @@ class Sudoku:
     def from_model(cls, model: clingo.solving.Model) -> "Sudoku":
         sudoku = {}
         # YOUR CODE HERE
+        for symbol in model.symbols(shown=True):
+            row = symbol.arguments[0].number
+            col = symbol.arguments[1].number
+            value = symbol.arguments[2].number
+
+            sudoku[(row, col)] = value
+
         return cls(sudoku)
